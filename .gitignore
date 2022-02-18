@@ -1,0 +1,8 @@
+*.tar.gz
+*.txt
+
+channel-artifacts/*.tx
+channel-artifacts/*.block
+crypto-config/*
+channel-artifacts/*.json
+connection-*.*
