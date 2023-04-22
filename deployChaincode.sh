@@ -46,13 +46,19 @@ setGlobalsForPeer1Org2() {
     export CORE_PEER_ADDRESS=localhost:10051
 
 }
-
+presetup() {
+    echo Vendoring Go dependencies ...
+    pushd ./chaincode/notarizer
+    GO111MODULE=on go mod vendor
+    popd
+    echo Finished vendoring Go dependencies
+}
 
 CHANNEL_NAME="mychannel"
-CC_RUNTIME_LANGUAGE="node"
+CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./chaincode/fabcar/javascript"
-CC_NAME="fabcar"
+CC_SRC_PATH="./chaincode/notarizer"
+CC_NAME="notarizer"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
