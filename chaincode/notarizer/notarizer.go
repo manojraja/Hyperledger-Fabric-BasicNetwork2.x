@@ -4,17 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	sc "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-	"github.com/hyperledger/fabric-chaincode-go/pkg/cid")
+	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
+)
 
 type SmartContract struct {
-	contractapi.Contract
 }
 
 type serverConfig struct {
@@ -53,7 +51,7 @@ type HistoryQueryResult struct {
 	IsDelete  bool            `json:"isDelete"`
 }
 
-func (t *SmartContract) Init(ctx contractapi.TransactionContextInterface) error {
+func (t *SmartContract) Init(APIstub shim.ChaincodeStubInterface) error {
 
 	fmt.Println("In init fmt")
 	log.Printf("In init fmt")
@@ -85,8 +83,8 @@ func (t *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 
 
 
-func (t *SmartContract) StoreData(ctx contractapi.TransactionContextInterface, docType, batchID string, blockchainID string, metaDataHash string, docHash string, sROID string, regYear string, bookNumber string, documentType string, createdBy string, updatedBy string, lastUpdatedTimestamp string, doc_Index_Id string, docSeqNo string) error {
-	exists, err := t.DataExists(ctx, blockchainID)
+func (t *SmartContract) StoreData(APIstub shim.ChaincodeStubInterface, docType, batchID string, blockchainID string, metaDataHash string, docHash string, sROID string, regYear string, bookNumber string, documentType string, createdBy string, updatedBy string, lastUpdatedTimestamp string, doc_Index_Id string, docSeqNo string) error {
+	exists, err := t.DataExists(APIstub, blockchainID)
 	if err != nil {
 		return err
 	}
@@ -120,11 +118,11 @@ func (t *SmartContract) StoreData(ctx contractapi.TransactionContextInterface, d
 		return err
 	}
 
-	return ctx.GetStub().PutState(blockchainID, NotarizerData1JSON)
+	return APIstub.GetStub().PutState(blockchainID, NotarizerData1JSON)
 }
 
-func (s *SmartContract) UpdateData(ctx contractapi.TransactionContextInterface, docType, batchID string, blockchainID string, metaDataHash string, docHash string, sROID string, regYear string, bookNumber string, documentType string, createdBy string, updatedBy string, lastUpdatedTimestamp string, doc_Index_Id string, docSeqNo string) error {
-	exists, err := s.DataExists(ctx, blockchainID)
+func (s *SmartContract) UpdateData(APIstub shim.ChaincodeStubInterface, docType, batchID string, blockchainID string, metaDataHash string, docHash string, sROID string, regYear string, bookNumber string, documentType string, createdBy string, updatedBy string, lastUpdatedTimestamp string, doc_Index_Id string, docSeqNo string) error {
+	exists, err := s.DataExists(APIstub, blockchainID)
 	if err != nil {
 		return err
 	}
@@ -156,11 +154,11 @@ func (s *SmartContract) UpdateData(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 
-	return ctx.GetStub().PutState(blockchainID, NotarizerData1JSON)
+	return APIstub.GetStub().PutState(blockchainID, NotarizerData1JSON)
 }
 
-func (s *SmartContract) DataExists(ctx contractapi.TransactionContextInterface, blockchainID string) (bool, error) {
-	NotarizerData1JSON, err := ctx.GetStub().GetState(blockchainID)
+func (s *SmartContract) DataExists(APIstub shim.ChaincodeStubInterface, blockchainID string) (bool, error) {
+	NotarizerData1JSON, err := APIstub.GetStub().GetState(blockchainID)
 	if err != nil {
 		return false, fmt.Errorf("failed to read from world state: %v", err)
 	}
@@ -187,10 +185,10 @@ func (s *SmartContract) DataExists(ctx contractapi.TransactionContextInterface, 
 // 	return &asset, nil
 // }
 
-func (t *SmartContract) GetHistoryForTransaction(ctx contractapi.TransactionContextInterface, blockchainID string) ([]HistoryQueryResult, error) {
+func (t *SmartContract) GetHistoryForTransaction(APIstub shim.ChaincodeStubInterface, blockchainID string) ([]HistoryQueryResult, error) {
 	log.Printf("GetAssetHistory: batchID %v", blockchainID)
 
-	resultsIterator, err := ctx.GetStub().GetHistoryForKey(blockchainID)
+	resultsIterator, err := APIstub.GetStub().GetHistoryForKey(blockchainID)
 	if err != nil {
 		return nil, err
 	}
