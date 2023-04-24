@@ -43,27 +43,16 @@ var logger = flogging.MustGetLogger("fabcar_cc")
 
 // Init ;  Method for initializing smart contract
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
-	NotarizerData1 := []NotarizerData1{
-		{DocType: "fdfdsd", BatchID: "SA123", BlockchainID: "Block21", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
-		{DocType: "fdfdsd", BatchID: "SA1123", BlockchainID: "Blockw1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
-		{DocType: "fdfdsd", BatchID: "SA1223", BlockchainID: "Blockr1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
-		{DocType: "fdfdsd", BatchID: "SA1423", BlockchainID: "Bloeck1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
-		{DocType: "fdfdsd", BatchID: "SA1423", BlockchainID: "Blockf1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
-		{DocType: "fdfdsd", BatchID: "SA12345", BlockchainID: "Blowck1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
+	var notarizerData1 = NotarizerData1{
+		DocType: "fdfdsd", BatchID: "SA123", BlockchainID: "Block21", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"
+	}
+	NotarizerData1JSON, err := json.Marshal(notarizerData1)
+	if err != nil {
+		return shim.Error(err.Error())
 	}
 
-	for _, notarizerData1 := range NotarizerData1 {
-		NotarizerData1JSON, err := json.Marshal(notarizerData1)
-		if err != nil {
-			return err
-		}
+	return APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
 
-		err = APIstub.PutState(NotarizerData1.BlockchainID, NotarizerData1JSON)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		return shim.Success(err)
-}
 }
 func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
@@ -90,7 +79,7 @@ func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, arg
 	}
 	NotarizerData1JSON, err := json.Marshal(notarizerData1)
 	if err != nil {
-		return err
+		return shim.Error(err.Error())
 	}
 
 	return APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
