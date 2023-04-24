@@ -52,16 +52,17 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 		{DocType: "fdfdsd", BatchID: "SA12345", BlockchainID: "Blowck1", MetaDataHash: "Tomoko", DocHash: "dfdfdf", SROID: "dsd23", RegYear: "sdsd", BookNumber: "dd2323", DocumentType: "dsdsd", CreatedBy: "Harini", UpdatedBy: "Harini", LastUpdatedTimestamp: "d232323", Doc_Index_Id: "Harini123", DocSeqNo: "jhbds"},
 	}
 
-	for _, NotarizerData1 := range NotarizerData1 {
-		NotarizerData1JSON, err := json.Marshal(NotarizerData1)
+	for _, notarizerData1 := range NotarizerData1 {
+		NotarizerData1JSON, err := json.Marshal(notarizerData1)
 		if err != nil {
 			return err
 		}
 
 		err = APIstub.PutState(NotarizerData1.BlockchainID, NotarizerData1JSON)
 		if err != nil {
-			return fmt.Errorf("failed to put to world state. %v", err)
+			return shim.Error(err.Error())
 		}
+		return shim.Success(err)
 }
 }
 func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -69,7 +70,7 @@ func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, arg
 	if len(args) < 14  {
 		return shim.Error("Incorrect number of arguments. Expecting 14")
 	}
-	NotarizerData1 := NotarizerData1{
+	var notarizerData1 = NotarizerData1{
 		DocType: args[0],
 		BatchID: args[1],
 		//payload
@@ -87,14 +88,17 @@ func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, arg
 		Doc_Index_Id:         args[12],
 		DocSeqNo:             args[13],
 	}
-	NotarizerData1JSON, err := json.Marshal(NotarizerData1)
+	NotarizerData1JSON, err := json.Marshal(notarizerData1)
 	if err != nil {
 		return err
 	}
 
-	return APIstub.PutState(NotarizerData1JSON.BlockchainID, NotarizerData1JSON)
-	
+	return APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
+	// return shim.Success(NotarizerData1JSON)
+
 }
+
+
 func (s *SmartContract) queryNotarizer(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 1 {

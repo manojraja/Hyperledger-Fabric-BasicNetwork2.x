@@ -226,7 +226,7 @@ chaincodeQuery() {
 
 # chaincodeQuery
 
-
+presetup
 packageChaincode
 installChaincode
 queryInstalled
