@@ -1,17 +1,17 @@
 package main
 
 import (
-	"bytes"
+	// "bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
+	// "strconv"
+	// "time"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	sc "github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/flogging"
 
-	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
+	// "github.com/hyperledger/fabric-chaincode-go/pkg/cid"
 )
 
 // SmartContract Define the Smart Contract structure
@@ -51,8 +51,27 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 		return shim.Error(err.Error())
 	}
 
-	return APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
+	 APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
+     return shim.Success(NotarizerData1JSON)
+}
 
+
+func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
+
+	function, args := APIstub.GetFunctionAndParameters()
+	logger.Infof("Function name is:  %d", function)
+	logger.Infof("Args length is : %d", len(args))
+
+	switch function {
+	case "invokeNotarizer":
+		return s.invokeNotarizer(APIstub, args)
+	case "queryNotarizer":
+		return s.queryNotarizer(APIstub, args)
+	default:
+		return shim.Error("Invalid Smart Contract function name.")
+	}
+
+	// return shim.Error("Invalid Smart Contract function name.")
 }
 func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
@@ -82,8 +101,8 @@ func (s *SmartContract) invokeNotarizer(APIstub shim.ChaincodeStubInterface, arg
 		return shim.Error(err.Error())
 	}
 
-	return APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
-	// return shim.Success(NotarizerData1JSON)
+	 APIstub.PutState(notarizerData1.BlockchainID, NotarizerData1JSON)
+	return shim.Success(NotarizerData1JSON)
 
 }
 
