@@ -261,12 +261,12 @@ const registerAndGerSecret = async (username, userOrg) => {
 
 exports.getRegisteredUser = getRegisteredUser
 
-// module.exports = {
-//     getCCP: getCCP,
-//     getWalletPath: getWalletPath,
-//     getRegisteredUser: getRegisteredUser,
-//     isUserRegistered: isUserRegistered,
-//     registerAndGerSecret: registerAndGerSecret
+module.exports = {
+    getCCP: getCCP,
+    getWalletPath: getWalletPath,
+    getRegisteredUser: getRegisteredUser,
+    isUserRegistered: isUserRegistered,
+    registerAndGerSecret: registerAndGerSecret
 
-// }
-getRegisteredUser('admin','Org1')
+}
+// getRegisteredUser('admin','Org1')
