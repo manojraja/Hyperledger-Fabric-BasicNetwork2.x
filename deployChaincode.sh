@@ -213,7 +213,7 @@ chaincodeInvoke() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "createCar", "Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Kannan"]}' \
+        -c '{"function": "invokeNotarizer", "Args":["dochash1", "BATCH001", "Block001", "MetaDataHash001", "DocHash001","SROID001","2023","Book1","DocumentType","manoj","test","LastUpdatedTimestamp","Doc_Index_Id","DocSeqNo"]}' \
         --transient "{\"car\":\"$CAR\"}"
 }
 
@@ -221,7 +221,7 @@ chaincodeInvoke() {
 
 chaincodeQuery() {
     setGlobalsForPeer0Org2
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "chaincodeInvoke","Args":["framework1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryNotarizer","Args":["Block001"]}'
 }
 
 # chaincodeQuery
