@@ -6,7 +6,7 @@ const http = require('http')
 const util = require('util');
 const express = require('express')
 const app = express();
-const expressJWT = require('express-jwt');
+const { expressjwt: jwtToken } = require('express-jwt');
 const jwt = require('jsonwebtoken');
 const bearerToken = require('express-bearer-token');
 const cors = require('cors');
@@ -29,40 +29,13 @@ app.use(bodyParser.urlencoded({
 }));
 // set secret variable
 app.set('secret', 'thisismysecret');
-app.use(expressJWT({
-    secret: 'thisismysecret'
-}).unless({
-    path: ['/users','/users/login', '/register']
-}));
+
 app.use(bearerToken());
 
 logger.level = 'debug';
 
 
-app.use((req, res, next) => {
-    logger.debug('New req for %s', req.originalUrl);
-    if (req.originalUrl.indexOf('/users') >= 0 || req.originalUrl.indexOf('/users/login') >= 0 || req.originalUrl.indexOf('/register') >= 0) {
-        return next();
-    }
-    var token = req.token;
-    jwt.verify(token, app.get('secret'), (err, decoded) => {
-        if (err) {
-            console.log(`Error ================:${err}`)
-            res.send({
-                success: false,
-                message: 'Failed to authenticate token. Make sure to include the ' +
-                    'token returned from /users call in the authorization header ' +
-                    ' as a Bearer token'
-            });
-            return;
-        } else {
-            req.username = decoded.username;
-            req.orgname = decoded.orgName;
-            logger.debug(util.format('Decoded from JWT token: username - %s, orgname - %s', decoded.username, decoded.orgName));
-            return next();
-        }
-    });
-});
+
 
 var server = http.createServer(app).listen(port, function () { console.log(`Server started on ${port}`) });
 logger.info('****************** SERVER STARTED ************************');
@@ -185,16 +158,14 @@ app.post('/users/login', async function (req, res) {
 
 
 // Invoke transaction on chaincode on target peers
-app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req, res) {
+app.post('/invokeNotarizer', async function (req, res) {
     try {
         logger.debug('==================== INVOKE ON CHAINCODE ==================');
-        var peers = req.body.peers;
-        var chaincodeName = req.params.chaincodeName;
-        var channelName = req.params.channelName;
-        var fcn = req.body.fcn;
-        var args = req.body.args;
-        var transient = req.body.transient;
-        console.log(`Transient data is ;${transient}`)
+        var channelName = req.body.channelName;
+        var chaincodeName = req.body.chaincodeName;
+        console.log(`chaincode name is :${chaincodeName}`)
+        let args = req.body.args;
+        let fcn = req.body.fcn;
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
         logger.debug('fcn  : ' + fcn);
@@ -216,7 +187,7 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
             return;
         }
 
-        let message = await invoke.invokeTransaction(channelName, chaincodeName, fcn, args, req.username, req.orgname, transient);
+        let message = await invoke.invokeTransaction(channelName, chaincodeName, fcn, args, req.body.username, req.body.orgname);
         console.log(`message result is : ${message}`)
 
         const response_payload = {
@@ -236,16 +207,15 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
     }
 });
 
-app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req, res) {
+app.post('/queryNotarizer', async function (req, res) {
     try {
         logger.debug('==================== QUERY BY CHAINCODE ==================');
 
-        var channelName = req.params.channelName;
-        var chaincodeName = req.params.chaincodeName;
+        var channelName = req.body.channelName;
+        var chaincodeName = req.body.chaincodeName;
         console.log(`chaincode name is :${chaincodeName}`)
-        let args = req.query.args;
-        let fcn = req.query.fcn;
-        let peer = req.query.peer;
+        let args = req.body.args;
+        let fcn = req.body.fcn;
 
         logger.debug('channelName : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
@@ -269,11 +239,11 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
             return;
         }
         console.log('args==========', args);
-        args = args.replace(/'/g, '"');
-        args = JSON.parse(args);
-        logger.debug(args);
-
-        let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
+        // args = args.replace(/'/g, '"');
+        // args = JSON.parse(args);
+        // logger.debug(args);
+        console.log(channelName, chaincodeName, args, fcn, req.body.username, req.body.orgname)
+        let message = await query.query(channelName, chaincodeName, args, fcn, req.body.username, req.body.orgname);
 
         const response_payload = {
             result: message,

@@ -60,5 +60,5 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 }
 
 exports.query = query
-let args=['Block001']
-query('mychannel', 'notarizer', args, 'queryNotarizer', 'admin', 'Org1')
+// let args=['Block001']
+// query('mychannel', 'notarizer', args, 'queryNotarizer', 'admin', 'Org1')

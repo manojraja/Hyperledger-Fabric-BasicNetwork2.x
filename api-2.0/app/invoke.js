@@ -81,6 +81,6 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
     }
 }
 
-// exports.invokeTransaction = invokeTransaction;
-let args=["dochash2", "BATCH002", "Block002", "MetaDataHash002", "DocHash002","SROID002","2023","Book1","DocumentType","manoj","test","LastUpdatedTimestamp","Doc_Index_Id","DocSeqNo"]
-invokeTransaction('mychannel', 'notarizer', 'invoke', args, 'admin', 'Org1')
+ exports.invokeTransaction = invokeTransaction;
+// let args=["dochash2", "BATCH002", "Block002", "MetaDataHash002", "DocHash002","SROID002","2023","Book1","DocumentType","manoj","test","LastUpdatedTimestamp","Doc_Index_Id","DocSeqNo"]
+// invokeTransaction('mychannel', 'notarizer', 'invoke', args, 'admin', 'Org1')
