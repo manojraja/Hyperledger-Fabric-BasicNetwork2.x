@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const bearerToken = require('express-bearer-token');
 const cors = require('cors');
 const constants = require('./config/constants.json')
+const crypto = require('crypto');
 
 const host = process.env.HOST || constants.host;
 const port = process.env.PORT || constants.port;
@@ -265,6 +266,7 @@ app.post('/queryNotarizer', async function (req, res) {
 app.post('/invokeCircleRateRegistry', async function (req, res) {
     try {
         logger.debug('==================== INVOKE ON CHAINCODE ==================');
+        var hash = crypto.createHash('sha256');
         var channelName = req.body.channelName;
         var chaincodeName = req.body.chaincodeName;
         console.log(`chaincode name is :${chaincodeName}`)
@@ -290,7 +292,17 @@ app.post('/invokeCircleRateRegistry', async function (req, res) {
             res.json(getErrorMessage('\'args\''));
             return;
         }
+        let fileData = hash.update(req.body.filePath, 'utf-8');
+        //Creating the hash value in the specific format
+        let fileHash= fileData.digest('hex');
+        let metaData = req.body.CircleRateMetaData
+        let circleRateMetaData = hash.update(metaData, 'utf-8');
+        let circleRateMetaDataHash = circleRateMetaData.digest('hex')
 
+        console.log("filehash",fileHash)
+        console.log("circleRateMetaDataHash",circleRateMetaDataHash)
+        args[0]= fileHash
+        args[1] = circleRateMetaDataHash
         let message = await invoke.invokeTransaction(channelName, chaincodeName, fcn, args, req.body.username, req.body.orgname);
         console.log(`message result is : ${message}`)
 
